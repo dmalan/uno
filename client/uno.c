@@ -9,8 +9,12 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+// size of each card
 #define CARD_HEIGHT 100
 #define CARD_WIDTH 70
+
+// size of top area of gui
+#define TOP_HEIGHT 120
 
 // card-related constants
 enum card_type { NUMERIC, WILD, NUM_TYPES };
@@ -21,7 +25,7 @@ struct card {
     uint32_t type;
     uint32_t color;
     int value;
-};
+} up_card;
 
 // window size
 static int WINDOW_HEIGHT = 600;
@@ -73,7 +77,12 @@ int main(int argc, char* argv[]) {
  *
  */
 void card_clicked(GtkWidget* card_button, gpointer card_data) {
-    g_print("%d\n", ((struct card*)card_data)->value);
+    struct card* c = (struct card*)card_data;
+
+    if (c->value == up_card.value || c->color == up_card.color)
+        g_print("GOOD JOB!!!\n");
+    else
+        g_print("I can\'t let you do that StarFox\n");
 }
 
 /**
@@ -93,7 +102,13 @@ void deal_random_hand(int length) {
         hand[i] = c;
     }
 
+    // keep track of size of hand
     hand_size = length;
+
+    // generate random up card
+    up_card.type = NUMERIC;
+    up_card.color = rand() % NUM_COLORS;
+    up_card.value = rand() % 12 + 1;
 }
 
 /**
@@ -125,10 +140,11 @@ void draw_card(GtkWidget* container, struct card* c, int x, int y) {
  */
 void draw_hand(GtkWidget* container) {
     int column = 0;
-    int row = 1;
+    int row = 0;
     int padding = 3;
     int cards_per_row = WINDOW_WIDTH / (CARD_WIDTH + padding);
 
+    // draw all cards in the hand
     for (int i = 0; i < hand_size; i++) {
         // if card cannot fit on this row, then move to the next row
         if (column * CARD_WIDTH + padding > WINDOW_WIDTH - CARD_WIDTH - 3) {
@@ -137,7 +153,10 @@ void draw_hand(GtkWidget* container) {
         }
 
         // draw the current card, then move to the next column
-        draw_card(container, &hand[i], column * CARD_WIDTH + padding, row * CARD_HEIGHT);
+        draw_card(container, &hand[i], column * CARD_WIDTH + padding, row * CARD_HEIGHT + TOP_HEIGHT);
         column++;
     }
+
+    // draw the up card
+    draw_card(container, &up_card, (WINDOW_WIDTH / 2 - CARD_WIDTH / 2), 10);
 }
