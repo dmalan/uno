@@ -3,7 +3,7 @@
  * Rob Bowden <rob@cs.harvard.edu>
  * Tommy MacWilliam <tmacwilliam@cs.harvard.edu>
  *
- * Somehwat less than loosely inspired by Matt Welsh's PhD thesis on SEDA
+ * Design somewhat inspired by Matt Welsh's PhD thesis on SEDA
  * Haven't benchmarked or anything yet, but might be surprisingly scalable
  */
 
@@ -37,7 +37,7 @@ int pipe_fd[2];
 //       epoll delete_min on the heap
 // TODO: Maybe flush anything on a socket from a user who sent data out of 
 // turn? There's a ton of reasons *not* to do that, though...
-// XXX: For simplicity, hardcode 4 players
+// XXX: For simplicity, hardcode max 4 players
 struct 
 {
     int fds[4];
