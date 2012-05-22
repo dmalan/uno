@@ -16,8 +16,8 @@
 #include <pthread.h>
 
 #include "queue.h"
-#include "server.h"
-#include "uno.h"
+#include "uno_server.h"
+#include "../uno.h"
 
 
 struct queue *connect_queue;

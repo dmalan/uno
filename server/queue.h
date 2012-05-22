@@ -3,7 +3,7 @@
 
 struct queue;
 
-int queue_init(struct queue *q, int size);
+int queue_init(struct queue **q, int size);
 int enqueue(struct queue *q, int fd);
 int dequeue(struct queue *q);
 

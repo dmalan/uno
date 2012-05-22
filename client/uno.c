@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#include "../uno.h"
+
 // size of each card
 #define CARD_HEIGHT 100
 #define CARD_WIDTH 70
@@ -16,16 +18,7 @@
 // size of top area of gui
 #define TOP_HEIGHT 120
 
-// card-related constants
-enum card_type { NUMERIC, WILD, NUM_TYPES };
-enum card_color { RED, GREEN, BLUE, YELLOW, NUM_COLORS };
-
-// struct representing a single card
-struct card_t {
-    uint32_t type;
-    uint32_t color;
-    int value;
-} up_card;
+struct card_t up_card;
 
 // window size
 int WINDOW_HEIGHT = 600;

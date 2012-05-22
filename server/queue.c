@@ -3,6 +3,7 @@
  * An int queue
  */
 #include <stdlib.h>
+#include <errno.h>
 #include <pthread.h>
 
 #include "queue.h"
@@ -43,27 +44,29 @@ queue_init(struct queue **q, int size)
     int err;
     if (q == NULL || size == 0)
         return -EINVAL;
-    *q = malloc(sizeof struct queue);
-    if (q == NULL)
+    struct queue *new_q;
+    new_q = malloc(sizeof (struct queue));
+    if (new_q == NULL)
         return -ENOMEM;
-    q->queue = malloc((sizeof int) * size);
-    if (q->queue == NULL)
+    new_q->queue = malloc(sizeof (int) * size);
+    if (new_q->queue == NULL)
     {
         err = -ENOMEM;
         goto e1;
     }
-    if ((err = pthread_mutex_init(&q->mutex)))
+    if ((err = pthread_mutex_init(&new_q->mutex, NULL)))
         goto e2;
-    if ((err = pthread_cond_init(&q->cv)))
+    if ((err = pthread_cond_init(&new_q->cv, NULL)))
         goto e3;
-    q->max_size = size;
-    q->size = 0;
-    q->offset = 0;
+    new_q->max_size = size;
+    new_q->size = 0;
+    new_q->offset = 0;
+    *q = new_q;
     return 0;
 
-e3: pthread_mutex_destroy(&q->mutex);
-e2: free(q->queue);
-e1: free(q);
+e3: pthread_mutex_destroy(&new_q->mutex);
+e2: free(new_q->queue);
+e1: free(new_q);
     return err;
 }
 
@@ -97,7 +100,7 @@ enqueue(struct queue *q, int fd)
 
     q->queue[(q->size + q->offset) % q->max_size] = fd;
     q->size++;
-    pthread_cond_signal(&q->cond);
+    pthread_cond_signal(&q->cv);
     pthread_mutex_unlock(&q->mutex);
     return 0;
 }
